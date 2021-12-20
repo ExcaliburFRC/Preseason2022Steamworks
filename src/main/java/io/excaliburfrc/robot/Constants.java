@@ -1,7 +1,5 @@
 package io.excaliburfrc.robot;
 
-import edu.wpi.first.math.util.Units;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -12,12 +10,8 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   // add a inner class `public static final class` for each subsystem.
-  public static final class IntakeConstants {
-    public static final int INTAKE_MOTOR_ID = 60;
-    public static final int FORWARD_CHANNEL = 1;
-    public static final int REVERSE_CHANNEL = 0;
-  }
-
+  // constants should be declared as `public static final double`
+  // constant names should be in `SCREAMING_SNAKE_CASE` or `kUpperCamelCase`
   public static final class DriveConstants {
     public static final int RIGHT_LEADER_ID = 11;
     public static final int RIGHT_FOLLOWER_ID = 12;
@@ -34,44 +28,4 @@ public final class Constants {
     public static final double kP_ang = 0.04, kS_ang = 0.023749999999999997;
     public static final double ANGLE_TOLERANCE = 3;
   }
-  // constants should be declared as `public static final double`
-  // constant names should be in `SCREAMING_SNAKE_CASE` or `kUpperCamelCase`
-  public static final class ShooterConstants {
-    public static final int SHOOTER_ID = 41;
-    public static final int CHANNEL_A = 9;
-    public static final int CHANNEL_B = 8;
-
-    /** Shooter PID tolerance */
-    public static final double TOLERANCE = 8;
-
-    public static final double ENCODER_CPR = 1024.0;
-    public static final double GEARING = 38.0 / 18.0;
-    public static final double TICKS_TO_WHEEL_ROTATIONS =
-        ENCODER_CPR / GEARING; // 485.05263157894734)
-    public static final double kS = 0.290, kV = 0.059347, kA = 0.00028977;
-    public static final double kP = 0.0027705;
-    public static final double kF = 1.0 / 175.0;
-  }
-
-  public static final class TransporterConstants {
-    public static final int FLICKER_ID = 33;
-    public static final int LOADING_ID = 32;
-    public static final int LIMIT = 250;
-  }
-
-  public static final class ClimberConstants {
-    public static final int LEADER_ID = 51;
-    public static final int FOLLOWER_ID = 50;
-    public static final int HANGER_REV = 2;
-    public static final int HANGER_FWD = 3;
-    public static final double UP_SPEED = 0.95;
-    public static final double DOWN_SPEED = -0.8;
-
-    /** Ignore values smaller than this */
-    public static final double DEADBAND = 0.5;
-  }
-
-  public static final int LL_REV = 4;
-  public static final int LL_FWD = 5;
-  public static final int LED_PORT = 4;
 }
