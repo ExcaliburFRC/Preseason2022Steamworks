@@ -12,10 +12,9 @@ import edu.wpi.first.math.util.Units;
  */
 public final class Constants {
   // add a inner class `public static final class` for each subsystem.
-  public static final class IntakeConstants {
-    public static final int INTAKE_MOTOR_ID = 60;
-    public static final int FORWARD_CHANNEL = 1;
-    public static final int REVERSE_CHANNEL = 0;
+  public static final class CollectorConstants {
+    public static final int FORWARD_CHANNEL = 1; // TODO set to correct ports
+    public static final int REVERSE_CHANNEL = 0; // TODO set to correct ports
   }
 
   public static final class DriveConstants {
