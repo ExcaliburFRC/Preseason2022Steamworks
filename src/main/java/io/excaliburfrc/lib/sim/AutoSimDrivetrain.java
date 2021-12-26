@@ -10,13 +10,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Tracer;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
-
-import javax.print.DocFlavor.STRING;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -70,7 +67,6 @@ public class AutoSimDrivetrain {
   /** Beware!!! THIS WILL RETURN NULL ON A REAL ROBOT!!! */
   public static AutoSimDrivetrain Initialize(Object subsystem, DifferentialDrivetrainSim model) {
     if (RobotBase.isReal()) return null;
-    Tracer tracer = new Tracer();
 
     DifferentialDrivetrainSim m_model = requireNonNull(model);
     MotorController m_leftMotor = null;
@@ -79,41 +75,30 @@ public class AutoSimDrivetrain {
     SimEncoder m_rightEncoder = null;
     SimGyro m_gyro = null;
 
-    tracer.resetTimer();
     List<Field> fields = List.of(subsystem.getClass().getDeclaredFields());
-    tracer.addEpoch("get fields");
     require(!fields.isEmpty(), "No fields found!");
-    StringBuilder stringBuilder = new StringBuilder();
     try {
-      for (int i = 0, fieldsSize = fields.size(); i < fieldsSize; i++) {
-        stringBuilder.append(i);
-        tracer.resetTimer();
-        Field field = fields.get(i);
+      for (Field field : fields) {
         // quick exit
         if (field.getAnnotations().length == 0) continue;
         field.setAccessible(true);
-        tracer.addEpoch("set-accessible");
         {
-          tracer.resetTimer();
           if (field.isAnnotationPresent(LeftMotor.class)) {
             requireSingleInitialization(m_leftMotor, LeftMotor.class);
             m_leftMotor = (MotorController) field.get(subsystem);
           }
-          tracer.addEpoch("left motor");
           if (field.isAnnotationPresent(RightMotor.class)) {
             requireSingleInitialization(m_rightMotor, RightMotor.class);
             m_rightMotor = (MotorController) field.get(subsystem);
           }
-          tracer.addEpoch("right motor");
         }
         {
-          tracer.resetTimer();
           LeftEncoder lencoder;
           if ((lencoder = field.getAnnotation(LeftEncoder.class)) != null) {
             Class<?> encoderType = field.getType();
             if (RelativeEncoder.class.isAssignableFrom(encoderType)) {
               m_leftEncoder =
-                      new SimREVEncoder(lencoder.canID, (RelativeEncoder) field.get(subsystem));
+                  new SimREVEncoder(lencoder.canID, (RelativeEncoder) field.get(subsystem));
             } else if (Encoder.class.equals(encoderType)) {
               m_leftEncoder = new SimWPILibEncoder((Encoder) field.get(subsystem));
             } else {
@@ -122,14 +107,12 @@ public class AutoSimDrivetrain {
               require(false, "Unsupported encoder type: " + encoderType.getSimpleName());
             }
           }
-          tracer.addEpoch("left encoder" + i);
-          System.out.println("left encoder");
           RightEncoder rencoder;
           if ((rencoder = field.getAnnotation(RightEncoder.class)) != null) {
             Class<?> encoderType = field.getType();
             if (RelativeEncoder.class.isAssignableFrom(encoderType)) {
               m_rightEncoder =
-                      new SimREVEncoder(rencoder.canID, (RelativeEncoder) field.get(subsystem));
+                  new SimREVEncoder(rencoder.canID, (RelativeEncoder) field.get(subsystem));
             } else if (Encoder.class.equals(encoderType)) {
               m_rightEncoder = new SimWPILibEncoder((Encoder) field.get(subsystem));
             } else {
@@ -138,30 +121,22 @@ public class AutoSimDrivetrain {
               require(false, "Unsupported encoder type: " + encoderType.getSimpleName());
             }
           }
-          tracer.addEpoch("right encoder" + i);
         }
         {
-          tracer.resetTimer();
           if (field.isAnnotationPresent(Gyro.class)) {
             Class<?> gyroType;
             require(
-                    (gyroType = field.getType()).equals(AHRS.class),
-                    "Gyro is wrong type: " + gyroType.getSimpleName() + "; expected AHRS (NavX).");
+                (gyroType = field.getType()).equals(AHRS.class),
+                "Gyro is wrong type: " + gyroType.getSimpleName() + "; expected AHRS (NavX).");
             m_gyro = new SimNavx();
           }
-          tracer.addEpoch("gyro" + i);
         }
-        stringBuilder.append('\n');
-        tracer.printEpochs(stringBuilder::append);
-        tracer.clearEpochs();
       }
       requireInitialized(m_leftMotor, m_rightMotor, m_leftEncoder, m_rightEncoder, m_gyro);
 
     } catch (IllegalAccessException e) {
       DriverStation.reportError(e.getMessage(), e.getStackTrace());
     }
-    System.err.println(stringBuilder);
-    System.err.flush();
     return new AutoSimDrivetrain(
         m_model, m_leftMotor, m_rightMotor, m_leftEncoder, m_rightEncoder, m_gyro);
   }
@@ -185,6 +160,8 @@ public class AutoSimDrivetrain {
     m_rightEncoder.setPosition(m_model.getRightPositionMeters());
     m_rightEncoder.setVelocity(m_model.getRightVelocityMetersPerSecond());
     m_gyro.setYaw(-m_model.getHeading().getDegrees());
+
+    DriverStation.reportWarning("periodic", false);
   }
 
   private static void requireInitialized(Object... objs) {
