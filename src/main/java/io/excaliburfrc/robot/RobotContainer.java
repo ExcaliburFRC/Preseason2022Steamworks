@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import io.excaliburfrc.robot.subsystems.Drivetrain;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -16,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
  */
 public class RobotContainer {
   // The robot's subsystems, as `public final`
+  private final Drivetrain drivetrain = new Drivetrain();
 
   // auto selector
   private final SendableChooser<Command> chooser = new SendableChooser<>();
@@ -43,6 +46,10 @@ public class RobotContainer {
 
     // armJoystick
 
+    drivetrain.setDefaultCommand(
+        new RunCommand(
+            () -> drivetrain.arcadeDrive(driveJoystick.getLeftX(), driveJoystick.getRightX()),
+            drivetrain));
   }
 
   public void initSubsystemStates() {}
