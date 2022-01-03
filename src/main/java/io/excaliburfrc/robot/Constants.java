@@ -52,6 +52,11 @@ public final class Constants {
     public static final double kF = 1.0 / 175.0;
   }
 
+  public static final class InTake2020Constants {
+    public static final int IntakeMotorID = 3;
+    public static final double MotorSpeed = 0.5; // (-1 < speed < 1)
+  }
+
   public static final class TransporterConstants {
     public static final int FLICKER_ID = 33;
     public static final int LOADING_ID = 32;
